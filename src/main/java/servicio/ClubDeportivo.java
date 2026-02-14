@@ -1,8 +1,10 @@
 package servicio;
 
 import entidades.*;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -18,15 +20,15 @@ public class ClubDeportivo {
     }
 
     public ArrayList<Socio> getSocios() {
-        // A implementar
-        ArrayList<Socio> listaSocios = new ArrayList<Socio>();
-        return listaSocios;
+        EntityManager em = emf.createEntityManager();
+        List<Socio> socios = em.createQuery("SELECT s FROM Socio s", Socio.class).getResultList();
+        return new ArrayList<>(socios);
     }
 
     public ArrayList<Pista> getPistas() {
-        // A implementar
-        ArrayList<Pista> listaPistas = new ArrayList<Pista>();
-        return listaPistas;
+        EntityManager em = emf.createEntityManager();
+        List<Pista> pistas = em.createQuery("SELECT p FROM Pista p", Pista.class).getResultList();
+        return new ArrayList<>(pistas);
     }
 
     public ArrayList<Reserva> getReservas() {
@@ -35,12 +37,33 @@ public class ClubDeportivo {
         return listaReservas;
     }
 
-    public void altaPista(Pista pista) throws SQLException {
-        // A implementar
+    public Boolean altaPista(Pista pista){
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.persist(pista);
+            em.getTransaction().commit();
+            em.close();
+            return true;
+        } catch (PersistenceException e) {
+            em.close();
+            return false;
+        }
+
+
     }
 
     public void darDeBajaSocio(Socio socioSeleccionado) throws SQLException {
         // A implementar
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.remove(socioSeleccionado);
+            em.getTransaction().commit();
+            em.close();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void darDeAltaSocio(Socio s) throws SQLException{

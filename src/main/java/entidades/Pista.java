@@ -53,4 +53,8 @@ public class Pista {
         this.disponible = disponible;
     }
 
+    public boolean isDisponible(){
+        return disponible;
+    }
+
 }

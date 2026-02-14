@@ -89,4 +89,8 @@ public class Reserva {
         this.precio = precio;
     }
 
+    @Override
+    public String toString() {
+        return idReserva;
+    }
 }

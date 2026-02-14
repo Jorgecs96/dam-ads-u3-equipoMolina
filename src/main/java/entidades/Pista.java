@@ -57,4 +57,9 @@ public class Pista {
         return disponible;
     }
 
+    @Override
+    public String toString() {
+        return idPista;
+
+    }
 }

@@ -16,8 +16,6 @@ public class CambiarDisponibilidadView extends GridPane {
         setPadding(new Insets(12));
         setHgap(8); setVgap(8);
 
-
-
         ComboBox<Pista> id = new ComboBox();
         CheckBox disponible = new CheckBox("Disponible");
         Button cambiar = new Button("Aplicar");
@@ -33,20 +31,26 @@ public class CambiarDisponibilidadView extends GridPane {
         addRow(1, new Label("Estado"), disponible);
         add(cambiar, 1, 2);
 
-        cambiar.setOnAction(e -> {
+        try {
+            cambiar.setOnAction(e -> {
 
-            Pista pistaSeleccionada = id.getValue();
-            if (pistaSeleccionada == null) {
-                showError("No has seleccionado una pista");
-            }
-            String idPista = pistaSeleccionada.getIdPista();
-            try {
-                club.CambiarDisponibilidad(idPista, disponible.isSelected());
-                showInfo("Pista modificada correctamente");
-            } catch (SQLException ex) {
-              showError("Error en la modificacion: " + ex.getMessage());
-            }
-        });
+                Pista pistaSeleccionada = id.getValue();
+                if (pistaSeleccionada == null) {
+                    showError("No has seleccionado una pista");
+                }
+                String idPista = pistaSeleccionada.getIdPista();
+                boolean cambioOK = club.CambiarDisponibilidad(idPista, disponible.isSelected());
+                if (cambioOK){
+                    showInfo("La disponibilidad de la pista " + idPista + "ha sido cambiada correctamente");
+                }
+                else {
+                    showError("No se ha podido cambiar la disponibilidad de la pista");
+                }
+            });
+        } catch (Exception e) {
+            showError("Error al cambiar disponibilidad de la pista");
+            e.printStackTrace();
+        }
     }
 
     private void showError(String msg) {

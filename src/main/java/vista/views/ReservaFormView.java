@@ -44,20 +44,21 @@ public class ReservaFormView extends GridPane {
         crear.setOnAction(e -> {
             try {
                 Reserva r = new Reserva();
-
                 r.setIdReserva(id.getText());
                 r.setFecha(fecha.getValue());
                 r.setHoraInicio(LocalTime.parse(hora.getText()));
                 r.setDuracionMin(duracion.getValue());
-
                 r.setPrecio(new BigDecimal(precio.getText()));
-
                 r.setIdSocio(idSocio.getValue());
                 r.setIdPista(idPista.getValue());
 
-                club.crearReserva(r);
-
-                showInfo("Reserva creada correctamente");
+                Boolean crearReservaOK = club.crearReserva(r);
+                if (crearReservaOK){
+                    showInfo("Reserva " + id.getText() + " creada correctamente");
+                }
+                else{
+                    showError("No se ha podido crear la reserva");
+                }
 
             } catch (Exception ex) {
                 showError("Error en la creación de la reserva: " + ex.getMessage());

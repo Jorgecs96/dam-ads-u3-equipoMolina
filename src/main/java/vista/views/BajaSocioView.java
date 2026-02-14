@@ -18,8 +18,6 @@ public class BajaSocioView extends GridPane {
         setHgap(8); setVgap(8);
 
         ComboBox<Socio> id = new ComboBox<>();
-
-
         addRow(0, new Label("Socio"), id);
         ArrayList<Socio> socios = club.getSocios();
         for (Socio socio : socios) {
@@ -28,24 +26,24 @@ public class BajaSocioView extends GridPane {
         Button baja = new Button("Dar de baja");
         addRow(1, baja);
 
-        baja.setOnAction(e -> {
-        //LLamar al método del modelo para dar de baja  a un socio.
-            Socio socioSeleccionado = id.getValue();
-            try {
+        try {
+            baja.setOnAction(e -> {
+                Socio socioSeleccionado = id.getValue();
                 if (socioSeleccionado == null) {
                     showError("Asegurese de haber seleccionado un socio");
                 }
-                club.darDeBajaSocio(socioSeleccionado);
-                showInfo("Socio eliminado correctamente");
-            } catch (SQLException ex) {
-                if (ex.getMessage().contains("fk_reservas_socio")) {
-                    showError("No se puede eliminar el socio porque tiene reservas asociadas.\n" +
-                            "El cliente no tiene que tener reservas activas antes de darlo de baja.");
+                boolean borradoOK = club.darDeBajaSocio(socioSeleccionado);
+                if (borradoOK) {
+                    showInfo("Socio " + socioSeleccionado.getNombre() + " eliminado correctamente");
+                    id.getItems().remove(socioSeleccionado);
                 } else {
-                    showError("Error al eliminar socio:\n" + ex.getMessage());
+                    showError("No se pudo eliminar al socio. Asegurate que no tiene reservas pendientes");
                 }
-            }
-        });
+            });
+        } catch (Exception e) {
+            showError("Error al dar de bajo al socio");
+            e.printStackTrace();
+        }
     }
 
     private void showError(String msg) {

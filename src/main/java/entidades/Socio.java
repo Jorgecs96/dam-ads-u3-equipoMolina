@@ -27,6 +27,11 @@ public class Socio {
     @Column(name = "email", length = 120)
     private String email;
 
+    @Override
+    public String toString() {
+        return nombre + " " +apellidos;
+    }
+
     public String getIdSocio() {
         return idSocio;
     }

@@ -26,24 +26,24 @@ public class PistaFormView extends GridPane {
         crear.setOnAction(e -> {
             try {
                 String dep = deporte.getText().toLowerCase();
-
                 if (!dep.equals("fútbol sala") && !dep.equals("pádel") && !dep.equals("tenis")) {
                     showError("Solo se permiten pistas de: fútbol sala, tenis o pádel");
                     return;
                 }
 
-
                 Pista nueva = new Pista();
-
-
                 nueva.setIdPista(id.getText());
                 nueva.setDeporte(dep);
                 nueva.setDescripcion(descripcion.getText());
                 nueva.setDisponible(disponible.isSelected());
 
-                club.altaPista(nueva);
-
-                showInfo("Pista creada correctamente.");
+                Boolean altaPistaOK = club.altaPista(nueva);
+                if (altaPistaOK){
+                    showInfo("Pista " + id.getText() + " ha sido creada correctamente.");
+                }
+                else {
+                    showError("No se ha podido dar de alta la pista");
+                }
 
             } catch (Exception ex) {
                 showError("Error al guardar en la base de datos: " + ex.getMessage());

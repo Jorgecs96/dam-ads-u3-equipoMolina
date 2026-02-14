@@ -1,10 +1,7 @@
 package servicio;
 
 import entidades.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceException;
+import jakarta.persistence.*;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -32,9 +29,9 @@ public class ClubDeportivo {
     }
 
     public ArrayList<Reserva> getReservas() {
-        // A implementar
-        ArrayList<Reserva> listaReservas = new ArrayList<Reserva>();
-        return listaReservas;
+        EntityManager em = emf.createEntityManager();
+        List<Reserva> reservas = em.createQuery("SELECT r FROM Reserva r", Reserva.class).getResultList();
+        return new ArrayList<>(reservas);
     }
 
     public Boolean altaPista(Pista pista){
@@ -49,36 +46,97 @@ public class ClubDeportivo {
             em.close();
             return false;
         }
-
-
     }
 
-    public void darDeBajaSocio(Socio socioSeleccionado) throws SQLException {
-        // A implementar
+    public Boolean darDeBajaSocio(Socio socioSeleccionado){
         EntityManager em = emf.createEntityManager();
         try{
+            Socio socioABorrar = em.find(Socio.class, socioSeleccionado.getIdSocio());
             em.getTransaction().begin();
-            em.remove(socioSeleccionado);
+            em.remove(socioABorrar);
             em.getTransaction().commit();
             em.close();
+            return true;
         } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+            em.close();
+            return false;
         }
     }
 
-    public void darDeAltaSocio(Socio s) throws SQLException{
-        // A implementar
+    public Boolean darDeAltaSocio(Socio s){
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.persist(s);
+            em.getTransaction().commit();
+            em.close();
+            return true;
+        } catch (PersistenceException e) {
+            em.close();
+            return false;
+        }
     }
 
-    public void crearReserva(Reserva r) throws SQLException {
-        // A implementar (LLAMAR A PROCEDIMIENTO SP_CREAR_RESERVA)
+    public boolean crearReserva(Reserva r) {
+        // Usamos la misma lógica que en el metodo borrarEmpleado del Ejercicio1 de clase
+        EntityManager em = emf.createEntityManager();
+        Query q = em.createQuery("select r from Reserva r where r.idPista = :idPista and r.fecha = :fecha and r.horaInicio = :horaInicio", Reserva.class);
+        q.setParameter("idPista", r.getIdPista());
+        q.setParameter("fecha", r.getFecha());
+        q.setParameter("horaInicio", r.getHoraInicio());
+        List<Reserva> listaReservas = q.getResultList();
+        if (listaReservas.size() > 0) {
+            em.close();
+            return false;
+        } else {
+            try {
+                em.getTransaction().begin();
+                em.persist(r);
+                em.getTransaction().commit();
+                em.close();
+                return true;
+            } catch (PersistenceException ex) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+                return false;
+            }
+        }
     }
 
-    public void CambiarDisponibilidad(String idPista, Boolean disponible) throws SQLException {
-        // A implementar (HACER UPDATE A LA PISTA)
+    public Boolean CambiarDisponibilidad(String idPista, Boolean disponible){
+        EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+
+            Pista pista = em.find(Pista.class, Long.parseLong(idPista));
+            if (pista != null){
+                pista.setDisponible(disponible);
+                em.getTransaction().commit();
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (PersistenceException e) {
+            em.close();
+            return false;
+        }
     }
-  
-    public void cancelarReserva(Reserva r) throws SQLException {
-        // A implementar
+
+    public Boolean cancelarReserva(Reserva r) {
+        EntityManager em = emf.createEntityManager();
+        try{
+            Reserva socioABorrar = em.find(Reserva.class, r.getIdReserva());
+            em.getTransaction().begin();
+            em.remove(socioABorrar);
+            em.getTransaction().commit();
+            em.close();
+            return true;
+        } catch (RuntimeException e) {
+            em.close();
+            return false;
+        }
     }
 }

@@ -30,10 +30,16 @@ public class CancelarReservaView extends GridPane {
 
         cancelar.setOnAction(e -> {
             try {
-            club.cancelarReserva(id.getValue());
-            showInfo("Reserva cancelada exitosamente");
+                boolean borrarReservaOK = club.cancelarReserva(id.getValue());
+
+                if (borrarReservaOK){
+                    showInfo("Se ha cancelado la reserva: " + id + "exitosamente");
+                }
+                else{
+                    showError("No se ha podido cancelar la reserva");
+                }
             } catch (Exception ex) {
-                showError(ex.getMessage());
+                showError("Error al cancelar la reserva" + ex.getMessage());
             }
         });
     }

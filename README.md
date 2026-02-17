@@ -52,7 +52,7 @@ src/
 ├── 📂 vista/         → Capa de presentación JavaFX
     ├── 📂 views/         → Formularios y paneles gráficos (dashboard, socios, pistas…)
         ├── 📄 Launcher.java  → Punto de entrada de la aplicación
-        └── 📄 MainApp.java   → Cerebrp de pa aplicación
+        └── 📄 MainApp.java   → Cerebro de la aplicación
 ```
 
 ## Conexión a la base de datos

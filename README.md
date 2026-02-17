@@ -84,7 +84,7 @@ private EntityManagerFactory emf;
 
 **Clona el repositorio**
 
-git clone https://github.com/yuhmandani/dam-ads-u2-equipomolina.git
+git clone https://github.com/Jorgecs96/dam-ads-u3-equipoMolina
 
 Abre el proyecto en tu IDE favorito (IntelliJ, Eclipse…).
 
